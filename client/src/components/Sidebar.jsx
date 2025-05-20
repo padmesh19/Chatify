@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import assets from "./../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { ChatContext } from "../../context/chatContext";
+import { ChatContext } from "../../context/ChatContext";
 
 const Sidebar = () => {
   const {
@@ -15,7 +15,7 @@ const Sidebar = () => {
   } = useContext(ChatContext);
   const { logout, onlineUsers } = useContext(AuthContext);
   const [input, setInput] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const filteredUsers = input
@@ -37,26 +37,34 @@ const Sidebar = () => {
           <img src={assets.logo} alt="logo" className="max-w-40" />
           <div className="relative py-2 group">
             <img
-              onClick={()=>setMenuOpen(!menuOpen)}
+              onClick={() => setMenuOpen(!menuOpen)}
               src={assets.menu_icon}
               alt="Menu"
               className="max-h-5 cursor-pointer"
             />
-            {menuOpen && <div className="absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-gray-800 border vorder-gray-600 text-gray-100">
-              <p
-                onClick={() => { setMenuOpen(false); navigate("/profile");  }}
-                className="cursor-pointer text-sm"
-              >
-                Edit Profile
-              </p>
-              <hr className="my-2 border-t border-gray-500" />
-              <p onClick={() => {
-                setMenuOpen(false);
-                logout();
-              }} className="cursor-pointer text-sm">
-                Logout
-              </p>
-            </div>}
+            {menuOpen && (
+              <div className="absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-gray-800 border vorder-gray-600 text-gray-100">
+                <p
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate("/profile");
+                  }}
+                  className="cursor-pointer text-sm"
+                >
+                  Edit Profile
+                </p>
+                <hr className="my-2 border-t border-gray-500" />
+                <p
+                  onClick={() => {
+                    setMenuOpen(false);
+                    logout();
+                  }}
+                  className="cursor-pointer text-sm"
+                >
+                  Logout
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -77,7 +85,7 @@ const Sidebar = () => {
             key={index}
             onClick={() => {
               setSelectedUser(user);
-              setUnseenMessages(prev=>({...prev, [user._id]:0}))
+              setUnseenMessages((prev) => ({ ...prev, [user._id]: 0 }));
             }}
             className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer max-sm:text-sm ${
               selectedUser?._id === user._id && "bg-[#282142]"
