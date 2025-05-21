@@ -4,7 +4,7 @@ import { formatMessageTime } from "../lib/utils";
 import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 
-const ChatContainer = () => {
+const ChatContainer = ({ setRightSidebarShow, rightSidebarShow }) => {
   const { messages, selectedUser, setSelectedUser, sendMessage, getMessages } =
     useContext(ChatContext);
   const { authUser, onlineUsers } = useContext(AuthContext);
@@ -48,15 +48,20 @@ const ChatContainer = () => {
   }, [messages]);
 
   return selectedUser ? (
-    <div className="bg-gray-100 h-full overflow-scroll relative">
+    <div className={`bg-gray-100 h-full overflow-scroll relative ${
+          rightSidebarShow ? "max-md:hidden" : ""
+        }`}>
       {/* Header Area */}
-      <div className="flex items-center gap-3 py-3 mx-4 border-b border-stone-500">
+      <div className="flex cursor-pointer items-center gap-3 py-3 mx-4 border-b border-stone-500">
         <img
-          src={selectedUser.profile_pic || assets.avatar_icon}
+          src={selectedUser.profilePic || assets.avatar_icon}
           alt=""
           className="w-8 rounded-full"
         />
-        <p className="flex-1 text-lg text-gray-900 flex items-center gap-2">
+        <p
+          onClick={() => setRightSidebarShow(true)}
+          className="flex-1 hover:text-violet-800 active:text-violet-800 text-lg text-gray-900 flex items-center gap-2"
+        >
           {selectedUser.fullName}
           {onlineUsers.includes(selectedUser._id) && (
             <span className="w-2 h-2 rounded-full bg-green-500"></span>
@@ -99,9 +104,9 @@ const ChatContainer = () => {
             <div className="text-center text-xs">
               <img
                 src={
-                  msg.senderId === authUser._id
+                  (msg.senderId === authUser._id
                     ? authUser?.profilePic
-                    : selectedUser?.profilePic || assets.avatar_icon
+                    : selectedUser?.profilePic) || assets.avatar_icon
                 }
                 alt=""
                 className="w-7 rounded-full"
