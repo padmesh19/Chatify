@@ -7,6 +7,7 @@ import { ChatContext } from "../../context/ChatContext";
 const HomePage = () => {
   const { selectedUser } = useContext(ChatContext);
   const [rightSidebarShow, setRightSidebarShow] = useState(false);
+  const [chatLoader, setChatLoader] = useState(true);
 
   return (
     <div className="w-full h-screen">
@@ -19,10 +20,12 @@ const HomePage = () => {
             : "md:grid-cols-2"
         }`}
       >
-        <Sidebar />
+        <Sidebar setChatLoader={setChatLoader} />
         <ChatContainer
           rightSidebarShow={rightSidebarShow}
           setRightSidebarShow={setRightSidebarShow}
+          chatLoader={chatLoader}
+          setChatLoader={setChatLoader}
         />
         {rightSidebarShow && (
           <RightSidebar

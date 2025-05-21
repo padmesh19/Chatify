@@ -10,12 +10,15 @@ const ProfilePage = () => {
   const [selectedImg, setSelectedImg] = useState(null);
   const navigate = useNavigate();
   const [name, setName] = useState(authUser.fullName);
-  const [bio, setBio] = useState(authUser.bio)
+  const [bio, setBio] = useState(authUser.bio);
+  const [updateLoader, setUpdateLoader] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setUpdateLoader(true);
     if (!selectedImg) {
       await updateProfile({ fullName: name, bio });
+      setUpdateLoader(false);
       navigate('/');
       return;
     }
@@ -24,8 +27,10 @@ const ProfilePage = () => {
     reader.onload = async () => {
       const base64Image = reader.result;
       await updateProfile({ profilePic:base64Image,fullName: name, bio });
+      setUpdateLoader(false);
       navigate("/");
     }
+    
   }
 
   return (
@@ -83,10 +88,11 @@ const ProfilePage = () => {
             rows={4}
           ></textarea>
           <button
+            disabled={updateLoader}
             type="submit"
             className="bg-gradient-to-r from-purple-400 to-violet-600 text-white p-2 rounded-md text-lg cursor-pointer"
           >
-            Save
+            {updateLoader ? 'Updating...': 'Update'}
           </button>
         </form>
         <img

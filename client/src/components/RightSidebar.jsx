@@ -24,7 +24,7 @@ const RightSidebar = ({ rightSidebarShow, setRightSidebarShow }) => {
           onClick={() => setRightSidebarShow(false)}
           src={assets.close_icon}
           alt=""
-          className="max-w-5 absolute top-4 right-4"
+          className="max-w-5 cursor-pointer absolute top-4 right-4"
         />
         <div className="pt-12 flex flex-col items-center gap-2 text-xs font-light mx-auto">
           <img

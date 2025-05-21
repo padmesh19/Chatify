@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 
-const Sidebar = () => {
+const Sidebar = ({ setChatLoader }) => {
   const {
     getUsers,
     users,
@@ -34,7 +34,12 @@ const Sidebar = () => {
     >
       <div className="pb-5">
         <div className="flex justify-between items-center">
-          <img src={assets.logo} alt="logo" className="max-w-40" />
+          <div className="flex gap-2 items-center">
+            <img src={assets.logo_icon} alt="logo" className="max-w-7" />
+            <span className="text-xl tracking-wider text-violet-100 font-medium">
+              Chatify
+            </span>
+          </div>
           <div className="relative py-2 group">
             <img
               onClick={() => setMenuOpen(!menuOpen)}
@@ -84,11 +89,12 @@ const Sidebar = () => {
           <div
             key={index}
             onClick={() => {
+              setChatLoader(true);
               setSelectedUser(user);
               setUnseenMessages((prev) => ({ ...prev, [user._id]: 0 }));
             }}
             className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer max-sm:text-sm ${
-              selectedUser?._id === user._id && "bg-[#282142]"
+              selectedUser?._id === user._id && "bg-violet-800/50"
             }`}
           >
             <img

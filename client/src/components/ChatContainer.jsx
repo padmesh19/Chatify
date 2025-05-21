@@ -4,7 +4,12 @@ import { formatMessageTime } from "../lib/utils";
 import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 
-const ChatContainer = ({ setRightSidebarShow, rightSidebarShow }) => {
+const ChatContainer = ({
+  setRightSidebarShow,
+  rightSidebarShow,
+  chatLoader,
+  setChatLoader,
+}) => {
   const { messages, selectedUser, setSelectedUser, sendMessage, getMessages } =
     useContext(ChatContext);
   const { authUser, onlineUsers } = useContext(AuthContext);
@@ -12,12 +17,14 @@ const ChatContainer = ({ setRightSidebarShow, rightSidebarShow }) => {
   const scrollEnd = useRef();
 
   const [input, setInput] = useState("");
+  const [isScrollEnd, setIsScrollEnd] = useState(false);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (input.trim() === "") return null;
-    await sendMessage({ text: input.trim() });
+    let message = input;
     setInput("");
+    if (message.trim() === "") return null;
+    await sendMessage({ text: message.trim() });
   };
 
   const handleSendImage = async (e) => {
@@ -43,14 +50,20 @@ const ChatContainer = ({ setRightSidebarShow, rightSidebarShow }) => {
 
   useEffect(() => {
     if (scrollEnd.current && messages) {
-      scrollEnd.current.scrollIntoView({ behavior: "smooth" });
+      requestAnimationFrame(() => {
+        scrollEnd.current.scrollIntoView({ behavior: "smooth" });
+      });
     }
+    setIsScrollEnd(true);
+    setChatLoader(false);
   }, [messages]);
 
   return selectedUser ? (
-    <div className={`bg-gray-100 h-full overflow-scroll relative ${
-          rightSidebarShow ? "max-md:hidden" : ""
-        }`}>
+    <div
+      className={`bg-gray-100 h-full overflow-scroll relative ${
+        rightSidebarShow ? "max-md:hidden" : ""
+      }`}
+    >
       {/* Header Area */}
       <div className="flex cursor-pointer items-center gap-3 py-3 mx-4 border-b border-stone-500">
         <img
@@ -77,46 +90,53 @@ const ChatContainer = ({ setRightSidebarShow, rightSidebarShow }) => {
       </div>
       {/* Chat Area */}
       <div className="flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex items-end gap-2 justify-end ${
-              msg.senderId !== authUser._id && "flex-row-reverse"
-            }`}
-          >
-            {msg.image ? (
-              <img
-                src={msg.image}
-                alt=""
-                className="max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8"
-              />
-            ) : (
-              <p
-                className={`p-2 max-w-[200px] md:text-sm rounded-md font-light rounded-1g mb-8 break-all bg-violet-500 text-white ${
-                  msg.senderId === authUser._id
-                    ? "rounded-br-none"
-                    : "rounded-bl-none"
-                }`}
-              >
-                {msg.text}
-              </p>
-            )}
-            <div className="text-center text-xs">
-              <img
-                src={
-                  (msg.senderId === authUser._id
-                    ? authUser?.profilePic
-                    : selectedUser?.profilePic) || assets.avatar_icon
-                }
-                alt=""
-                className="w-7 rounded-full"
-              />
-              <p className="text-gray-500">
-                {formatMessageTime(msg.createdAt)}
-              </p>
+        {chatLoader && (
+          <h2 className="flex justify-center items-center h-full text-gray-800 text-2xl">
+            Loading Messages...
+          </h2>
+        )}
+        {!chatLoader &&
+          isScrollEnd &&
+          messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex items-end gap-2 justify-end ${
+                msg.senderId !== authUser._id && "flex-row-reverse"
+              }`}
+            >
+              {msg.image ? (
+                <img
+                  src={msg.image}
+                  alt=""
+                  className="max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8"
+                />
+              ) : (
+                <p
+                  className={`p-2 max-w-[200px] md:text-sm rounded-md font-light rounded-1g mb-8 break-all bg-violet-500 text-white ${
+                    msg.senderId === authUser._id
+                      ? "rounded-br-none"
+                      : "rounded-bl-none"
+                  }`}
+                >
+                  {msg.text}
+                </p>
+              )}
+              <div className="text-center text-xs">
+                <img
+                  src={
+                    (msg.senderId === authUser._id
+                      ? authUser?.profilePic
+                      : selectedUser?.profilePic) || assets.avatar_icon
+                  }
+                  alt=""
+                  className="w-7 rounded-full"
+                />
+                <p className="text-gray-500">
+                  {formatMessageTime(msg.createdAt)}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         <div ref={scrollEnd}></div>
       </div>
       {/* bottom area */}
